@@ -1,0 +1,27 @@
+{
+  "name": "red-medical-challenge",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "commitlint": "commitlint -e",
+    "lint": "eslint ./**/*.ts",
+    "lint:fix": "eslint ./**/*.ts --fix",
+    "prestart": "rm -rf dist && yarn build",
+    "start:dev": "nodemon --watch 'src/**' --ext 'ts,json' --exec 'yarn build && node dist/index.js'"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@types/node": "^14.17.6",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "husky": "^7.0.1",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
+}

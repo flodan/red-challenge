@@ -2,7 +2,13 @@ import { createServer, ServerOptions } from 'https'
 import { readFileSync } from 'fs'
 import { IncomingMessage, RequestListener, ServerResponse } from 'http'
 import { readFile } from 'fs/promises'
+import decryptFile from './decrypt-file'
 
+
+/**
+ * Challenge No. 1
+ */
+// Call decryptFile method from './decrypt-file.ts' here
 const decryptedFilePath = __dirname + '/../assets/clear_smaller.txt'
 
 const main = async() => {
@@ -20,7 +26,7 @@ const main = async() => {
    */
   console.log(`Adding all vowels that occur in file '${decryptedFilePath}'...`)
   const sumVowels = addVowelsInString(fileContent)
-  console.log(`Sum of all vowels in file: ${sumVowels}`)
+  console.log(`Sum of all numbers and weighted vowels in file: ${sumNumbers + sumVowels}`)
 
   /**
    * Challenge No. 4
@@ -48,7 +54,7 @@ const addVowelsInString = (text: string): number => {
     e: 4,
     i: 8,
     o: 16,
-    u: 3,
+    u: 32,
   }
   const vowelList = Object.keys(vowelWeights)
 
@@ -66,6 +72,7 @@ const startHTTPSServer = () => {
   const requestListener: RequestListener = async(req: IncomingMessage, res: ServerResponse) => {
     const sumOfNumbersPerSentenceList = await sumOfNumbersPerSentence(decryptedFilePath)
     const tenBiggestNumbers = sumOfNumbersPerSentenceList.sort((a, b) => a.sum - b.sum).slice(sumOfNumbersPerSentenceList.length - 10)
+    console.log(tenBiggestNumbers)
     const orderedByIndex = tenBiggestNumbers.sort((a, b) => a.index - b.index)
     const minusIndex = orderedByIndex.map(v => v.sum - v.index)
 

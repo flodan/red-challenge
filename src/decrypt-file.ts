@@ -1,36 +1,35 @@
-import {} from 'buffer'
 import { createDecipheriv } from 'crypto'
-import { createReadStream, createWriteStream } from 'fs'
-import { readFile, writeFile } from 'fs/promises'
-import { createGunzip } from 'zlib'
+import { readFile } from 'fs/promises'
 
-readFile(__dirname + '/../assets/secret.key').then(async(value) => {
+const decryptFile = async(): Promise<void> => {
   try {
-    const key = Buffer.from(value.toString(), 'hex')
+    const secretKey = await readFile(__dirname + '/../assets/secret.key', 'utf8')
+    const key = Buffer.from(secretKey.toString(), 'hex')
     console.log('KEY:', key, 'Length:', key.length)
-    const encrypted = await readFile(__dirname + '/../assets/secret.enc')
+
+    const encrypted = await readFile(__dirname + '/../assets/secret.enc', 'base64')
     console.log('Read encrypted file', encrypted.length)
+
     const iv = await readFile(__dirname + '/../assets/iv.txt')
-    console.log('Read IV', iv.length)
+    console.log('Read IV', iv, 'Length:', iv.length)
+
     const authTag = await readFile(__dirname + '/../assets/auth.txt')
-    console.log('Read Auth Tag', authTag.length)
+    console.log('Read Auth Tag', authTag, 'Length:', authTag.length)
 
-    const decipher = createDecipheriv('aes-256-gcm', key, iv)
+    let decipher = createDecipheriv('aes-256-gcm', key, iv)
     console.log('Created decipher IV')
-    decipher.setAuthTag(authTag)
+    decipher = decipher.setAuthTag(authTag)
     console.log('Set Auth Tag')
-    // let str = decipher.update(encrypted)
-    // console.log('Updated decipher', str.length)
 
-    // await writeFile(__dirname + '/output.zip', str)
-    // const readStream = createReadStream(__dirname + '/output.zip')
-    // const writeStream = createWriteStream(__dirname + '/output.txt')
-    // const unzip = createGunzip()
-    // readStream.pipe(unzip).pipe(writeStream)
+    let decrypted = decipher.update(encrypted, 'base64', 'utf8')
+    console.log('Updated decipher', decrypted.length)
 
-    const str = Buffer.concat([decipher.update(encrypted), decipher.final()])
-    console.log('Decrypted')
+    // TODO: this currently throws an error
+    decrypted += decipher.final('utf8')
+    console.log('Decrypted', decrypted.length)
   } catch (error) {
-    console.log('Error', error.message)
+    console.log('Error', error)
   }
-})
+}
+
+export default decryptFile
